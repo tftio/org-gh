@@ -1,0 +1,83 @@
+[
+  {
+    "color": "d73a4a",
+    "default": true,
+    "description": "Something isn't working",
+    "id": 9964728613,
+    "name": "bug",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxJQ",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/bug"
+  },
+  {
+    "color": "0075ca",
+    "default": true,
+    "description": "Improvements or additions to documentation",
+    "id": 9964728621,
+    "name": "documentation",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxLQ",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/documentation"
+  },
+  {
+    "color": "cfd3d7",
+    "default": true,
+    "description": "This issue or pull request already exists",
+    "id": 9964728630,
+    "name": "duplicate",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxNg",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/duplicate"
+  },
+  {
+    "color": "a2eeef",
+    "default": true,
+    "description": "New feature or request",
+    "id": 9964728634,
+    "name": "enhancement",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxOg",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/enhancement"
+  },
+  {
+    "color": "7057ff",
+    "default": true,
+    "description": "Good for newcomers",
+    "id": 9964728647,
+    "name": "good first issue",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxRw",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/good%20first%20issue"
+  },
+  {
+    "color": "008672",
+    "default": true,
+    "description": "Extra attention is needed",
+    "id": 9964728640,
+    "name": "help wanted",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxQA",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/help%20wanted"
+  },
+  {
+    "color": "e4e669",
+    "default": true,
+    "description": "This doesn't seem right",
+    "id": 9964728652,
+    "name": "invalid",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxTA",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/invalid"
+  },
+  {
+    "color": "d876e3",
+    "default": true,
+    "description": "Further information is requested",
+    "id": 9964728657,
+    "name": "question",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxUQ",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/question"
+  },
+  {
+    "color": "ffffff",
+    "default": true,
+    "description": "This will not be worked on",
+    "id": 9964728663,
+    "name": "wontfix",
+    "node_id": "LA_kwDOQ202d88AAAACUfGxVw",
+    "url": "https://api.github.com/repos/tftio/org-gh-test-fixture/labels/wontfix"
+  }
+]

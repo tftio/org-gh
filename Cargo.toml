@@ -1,0 +1,41 @@
+[package]
+name = "org-gh"
+version = "0.1.0"
+edition = "2021"
+authors = ["JFB"]
+description = "Bidirectional sync between org-mode and GitHub Issues"
+license = "MIT"
+repository = "https://github.com/jfb/org-gh"
+keywords = ["org-mode", "github", "sync", "emacs"]
+categories = ["command-line-utilities", "development-tools"]
+
+[dependencies]
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Org parsing
+orgize = { version = "0.10.0-alpha.10", features = ["indexmap"] }
+
+# GitHub API
+octocrab = "0.44"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+# Utilities
+thiserror = "2"
+anyhow = "1"
+chrono = { version = "0.4", features = ["serde"] }
+sha2 = "0.10"
+directories = "5"
+dialoguer = "0.11"
+console = "0.15"
+
+[dev-dependencies]
+tempfile = "3"
+wiremock = "0.6"

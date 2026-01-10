@@ -84,7 +84,7 @@ Description goes in the body.
 Someone closes an issue or adds labels on GitHub:
 
 ```
-C-c g l    (pull)
+C-c g p    (pull)
 ```
 
 Your org file updates: `TODO` becomes `DONE`, labels/assignees sync.
@@ -102,9 +102,10 @@ C-c g s    (sync handles both directions)
 | Key     | Command              | Description                    |
 |---------|----------------------|--------------------------------|
 | C-c g s | `org-gh-sync`        | Bidirectional sync             |
-| C-c g l | `org-gh-pull`        | Pull GitHub → org              |
-| C-c g p | `org-gh-push`        | Push org → GitHub              |
+| C-c g p | `org-gh-pull`        | Pull GitHub → org              |
+| C-c g P | `org-gh-push-heading`| Push heading at point          |
 | C-c g S | `org-gh-status`      | Show sync status               |
+| C-c g i | `org-gh-init`        | Initialize file for repo       |
 | C-c g b | `org-gh-browse`      | Open issue at point in browser |
 | C-c g u | `org-gh-unlink`      | Remove GH link from heading    |
 

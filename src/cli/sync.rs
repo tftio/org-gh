@@ -2,13 +2,20 @@ use crate::config::Config;
 use crate::error::{Error, Result};
 use crate::github::model::{CreateIssueRequest, GhIssueState, UpdateIssueRequest};
 use crate::github::GitHubClient;
-use crate::org::writer::{set_property, set_todo_state};
+use crate::org::model::OrgItem;
+use crate::org::writer::{set_properties, set_todo_state};
 use crate::org::{parse_file, write_file};
 use crate::output::{format, Conflict, Format, PullItem, PushItem, SyncOutput};
 use crate::sync::diff::{three_way_diff, FieldChange};
 use crate::sync::SyncState;
 use clap::Args as ClapArgs;
 use std::path::PathBuf;
+
+/// Pending property updates to apply to org file (grouped by item)
+struct PendingUpdate {
+    item: OrgItem,
+    properties: Vec<(String, String)>, // (property_name, value)
+}
 
 #[derive(ClapArgs)]
 pub struct Args {
@@ -57,6 +64,7 @@ pub async fn run(args: Args, output_format: Format) -> Result<()> {
     let mut pulled_items = Vec::new();
     let mut conflict_items = Vec::new();
     let mut skipped = 0;
+    let mut pending_updates: Vec<PendingUpdate> = Vec::new();
 
     // Process each org item
     for item in &org_file.items {
@@ -276,22 +284,12 @@ pub async fn run(args: Args, output_format: Format) -> Result<()> {
                     });
                 }
 
-                // Apply org updates
-                for (field, value) in &org_changes {
-                    match *field {
-                        "state" => {
-                            org_file.content = set_todo_state(&org_file.content, item, value);
-                        }
-                        "assignees" => {
-                            org_file.content =
-                                set_property(&org_file.content, item, "ASSIGNEE", value);
-                        }
-                        "labels" => {
-                            org_file.content =
-                                set_property(&org_file.content, item, "LABELS", value);
-                        }
-                        _ => {}
-                    }
+                // Queue org updates (will apply in reverse order later)
+                if !org_changes.is_empty() {
+                    pending_updates.push(PendingUpdate {
+                        item: item.clone(),
+                        properties: org_changes.iter().map(|(k, v)| (k.to_string(), v.clone())).collect(),
+                    });
                 }
                 if !org_changes.is_empty() {
                     pulled_items.push(PullItem {
@@ -372,14 +370,14 @@ pub async fn run(args: Args, output_format: Format) -> Result<()> {
                     (client.create_issue(req).await?, false)
                 };
 
-                // Update org file with issue number
-                org_file.content = set_property(
-                    &org_file.content,
-                    item,
-                    "GH_ISSUE",
-                    &issue.number.to_string(),
-                );
-                org_file.content = set_property(&org_file.content, item, "GH_URL", &issue.html_url);
+                // Queue property updates (will apply in reverse order later)
+                pending_updates.push(PendingUpdate {
+                    item: item.clone(),
+                    properties: vec![
+                        ("GH_ISSUE".to_string(), issue.number.to_string()),
+                        ("GH_URL".to_string(), issue.html_url.clone()),
+                    ],
+                });
 
                 // Update sync state
                 state.record_sync(
@@ -403,6 +401,32 @@ pub async fn run(args: Args, output_format: Format) -> Result<()> {
                     url: issue.html_url,
                     action: if matched { "matched" } else { "created" }.to_string(),
                 });
+            }
+        }
+    }
+
+    // Apply pending updates in reverse order (so spans remain valid)
+    if !args.dry_run {
+        // Sort by span start position descending
+        pending_updates.sort_by(|a, b| b.item.span.start.cmp(&a.item.span.start));
+
+        for update in pending_updates {
+            // Handle state change separately (modifies headline, not properties)
+            let state_change = update.properties.iter().find(|(k, _)| k == "state");
+            if let Some((_, new_state)) = state_change {
+                org_file.content = set_todo_state(&org_file.content, &update.item, new_state);
+            }
+
+            // Apply all property changes at once
+            let props: Vec<(&str, &str)> = update
+                .properties
+                .iter()
+                .filter(|(k, _)| k != "state")
+                .map(|(k, v)| (k.as_str(), v.as_str()))
+                .collect();
+
+            if !props.is_empty() {
+                org_file.content = set_properties(&org_file.content, &update.item, &props);
             }
         }
     }

@@ -7,6 +7,29 @@ pub fn write_file(file: &OrgFile) -> Result<()> {
     Ok(())
 }
 
+/// Update multiple properties in an item's property drawer at once
+/// This is more efficient and avoids span invalidation issues
+pub fn set_properties(content: &str, item: &OrgItem, props: &[(&str, &str)]) -> String {
+    if props.is_empty() {
+        return content.to_string();
+    }
+
+    if let Some(ref props_span) = item.properties_span {
+        let before = &content[..props_span.start];
+        let drawer = &content[props_span.start..props_span.end];
+        let after = &content[props_span.end..];
+
+        let mut new_drawer = drawer.to_string();
+        for (key, value) in props {
+            new_drawer = update_property_in_drawer(&new_drawer, key, value);
+        }
+        format!("{}{}{}", before, new_drawer, after)
+    } else {
+        // Need to insert a new property drawer - insert all props at once
+        insert_property_drawer_multi(content, item, props)
+    }
+}
+
 /// Update a property in an item's property drawer
 /// Returns the new content with the property updated
 pub fn set_property(content: &str, item: &OrgItem, key: &str, value: &str) -> String {
@@ -75,6 +98,11 @@ fn update_property_in_drawer(drawer: &str, key: &str, value: &str) -> String {
 
 /// Insert a new property drawer after a headline
 fn insert_property_drawer(content: &str, item: &OrgItem, key: &str, value: &str) -> String {
+    insert_property_drawer_multi(content, item, &[(key, value)])
+}
+
+/// Insert a new property drawer with multiple properties
+fn insert_property_drawer_multi(content: &str, item: &OrgItem, props: &[(&str, &str)]) -> String {
     // Find the end of the headline line
     let headline_start = item.span.start;
     let headline_end = content[headline_start..]
@@ -85,7 +113,12 @@ fn insert_property_drawer(content: &str, item: &OrgItem, key: &str, value: &str)
     let before = &content[..headline_end];
     let after = &content[headline_end..];
 
-    let drawer = format!("\n:PROPERTIES:\n:{}: {}\n:END:", key.to_uppercase(), value);
+    let props_str: Vec<String> = props
+        .iter()
+        .map(|(k, v)| format!(":{}: {}", k.to_uppercase(), v))
+        .collect();
+
+    let drawer = format!("\n:PROPERTIES:\n{}\n:END:", props_str.join("\n"));
 
     format!("{}{}{}", before, drawer, after)
 }

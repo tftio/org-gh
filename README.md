@@ -18,7 +18,33 @@ cargo install --git https://github.com/tftio/org-gh
 
 ## Emacs Setup
 
-Add to your init.el:
+### Using package.el (Emacs 29+)
+
+```elisp
+(package-vc-install
+ '(org-gh :url "https://github.com/tftio/org-gh"
+          :lisp-dir "elisp"))
+```
+
+Or with use-package:
+
+```elisp
+(use-package org-gh
+  :vc (:url "https://github.com/tftio/org-gh"
+       :lisp-dir "elisp"))
+```
+
+### Using straight.el
+
+```elisp
+(straight-use-package
+ '(org-gh :type git
+          :host github
+          :repo "tftio/org-gh"
+          :files ("elisp/*.el")))
+```
+
+### Manual installation
 
 ```elisp
 (add-to-list 'load-path "~/.local/share/org-gh/elisp")

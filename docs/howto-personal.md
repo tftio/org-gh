@@ -24,7 +24,15 @@ export GITHUB_TOKEN="ghp_xxxx"
 
 ### 3. Load Elisp
 
-Add to your Emacs config:
+**Using package.el (Emacs 29+):**
+
+```elisp
+(use-package org-gh
+  :vc (:url "https://github.com/tftio/org-gh"
+       :lisp-dir "elisp"))
+```
+
+**Or manual installation:**
 
 ```elisp
 (add-to-list 'load-path "~/.local/share/org-gh/elisp")
